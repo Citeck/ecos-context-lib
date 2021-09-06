@@ -11,7 +11,7 @@ object AuthContext {
         return component.getCurrentUser()
     }
 
-    fun getCurrentAuthorities(): List<String> {
+    fun getCurrentUserAuthorities(): List<String> {
         return component.getCurrentUserAuthorities()
     }
 
@@ -19,7 +19,7 @@ object AuthContext {
         return component.getCurrentRunAsUser()
     }
 
-    fun getCurrentRunAsAuthorities(): List<String> {
+    fun getCurrentRunAsUserAuthorities(): List<String> {
         return component.getCurrentRunAsUserAuthorities()
     }
 
