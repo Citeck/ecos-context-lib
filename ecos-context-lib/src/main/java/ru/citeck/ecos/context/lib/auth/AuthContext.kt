@@ -1,8 +1,8 @@
 package ru.citeck.ecos.context.lib.auth
 
-object AuthContext {
+import java.util.function.Supplier
 
-    const val ROLE_SYSTEM = "ROLE_SYSTEM"
+object AuthContext {
 
     var component: AuthComponent = SimpleAuthComponent()
 
@@ -38,12 +38,27 @@ object AuthContext {
 
     @JvmStatic
     fun isRunAsSystem(): Boolean {
-        return getCurrentRunAsAuthorities().contains(ROLE_SYSTEM)
+        return getCurrentRunAsAuthorities().contains(AuthRole.SYSTEM)
     }
 
     @JvmStatic
     fun <T> runAsSystem(action: () -> T): T {
-        return runAs(component.getSystemUser(), listOf(ROLE_SYSTEM), action)
+        return runAs(component.getSystemUser(), listOf(AuthRole.SYSTEM), action)
+    }
+
+    @JvmStatic
+    fun getSystemUser(): String {
+        return component.getSystemUser()
+    }
+
+    @JvmStatic
+    fun <T> runAsSystemJ(action: Supplier<T>): T {
+        return runAsSystem { action.get() }
+    }
+
+    @JvmStatic
+    fun runAsSystemJ(action: Runnable) {
+        return runAsSystem { action.run() }
     }
 
     @JvmStatic
