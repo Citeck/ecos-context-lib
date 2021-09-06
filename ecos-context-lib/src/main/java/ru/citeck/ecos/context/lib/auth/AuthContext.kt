@@ -1,7 +1,5 @@
 package ru.citeck.ecos.context.lib.auth
 
-import java.util.function.Supplier
-
 object AuthContext {
 
     var component: AuthComponent = SimpleAuthComponent()
@@ -49,11 +47,6 @@ object AuthContext {
     @JvmStatic
     fun getSystemUser(): String {
         return component.getSystemUser()
-    }
-
-    @JvmStatic
-    fun <T> runAsSystemJ(action: Supplier<T>): T {
-        return runAsSystem { action.get() }
     }
 
     @JvmStatic
