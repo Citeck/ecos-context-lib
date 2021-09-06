@@ -4,11 +4,11 @@ interface AuthComponent {
 
     fun getCurrentUser(): String
 
-    fun getCurrentAuthorities(): List<String>
+    fun getCurrentUserAuthorities(): List<String>
 
     fun getCurrentRunAsUser(): String
 
-    fun getCurrentRunAsAuthorities(): List<String>
+    fun getCurrentRunAsUserAuthorities(): List<String>
 
     fun <T> runAs(user: String, authorities: List<String>, action: () -> T): T
 

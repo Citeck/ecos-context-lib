@@ -6,7 +6,7 @@ class NoopAuthComponent : AuthComponent {
         return ""
     }
 
-    override fun getCurrentAuthorities(): List<String> {
+    override fun getCurrentUserAuthorities(): List<String> {
         return emptyList()
     }
 
@@ -14,8 +14,8 @@ class NoopAuthComponent : AuthComponent {
         return getCurrentUser()
     }
 
-    override fun getCurrentRunAsAuthorities(): List<String> {
-        return getCurrentAuthorities()
+    override fun getCurrentRunAsUserAuthorities(): List<String> {
+        return getCurrentUserAuthorities()
     }
 
     override fun <T> runAs(user: String, authorities: List<String>, action: () -> T): T {
