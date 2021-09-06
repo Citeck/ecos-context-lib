@@ -2,17 +2,14 @@ package ru.citeck.ecos.context.lib
 
 import ru.citeck.ecos.context.lib.auth.AuthComponent
 import ru.citeck.ecos.context.lib.auth.AuthContext
-import ru.citeck.ecos.context.lib.auth.NoopAuthComponent
 
 open class ContextServiceFactory {
 
-    val authComponent: AuthComponent by lazy { createAuthComponent() }
-
     open fun init() {
-        AuthContext.component = authComponent
+        AuthContext.component = createAuthComponent() ?: AuthContext.component
     }
 
-    protected open fun createAuthComponent(): AuthComponent {
-        return NoopAuthComponent()
+    protected open fun createAuthComponent(): AuthComponent? {
+        return null
     }
 }

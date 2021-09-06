@@ -9,43 +9,49 @@ import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.User
 import org.springframework.stereotype.Component
 import ru.citeck.ecos.context.lib.auth.AuthComponent
-import ru.citeck.ecos.context.lib.auth.AuthContext
+import ru.citeck.ecos.context.lib.auth.AuthData
+import ru.citeck.ecos.context.lib.auth.SimpleAuthData
 
 @Component
 @ConditionalOnMissingBean(AuthComponent::class)
 class SpringAuthComponent : AuthComponent {
 
+    companion object {
+        const val APP_PREFIX = "APP_"
+    }
+
     @Value("\${spring.application.name:}")
     private lateinit var springAppName: String
 
-    override fun getCurrentUser(): String {
-        return getAuthentication()?.name ?: ""
+    override fun getCurrentAuth(): AuthData {
+        val authentication = getAuthentication() ?: return SimpleAuthData.EMPTY
+        return SimpleAuthData(authentication.name, authentication.authorities.map { it.authority })
     }
 
-    override fun getCurrentUserAuthorities(): List<String> {
-
-        val authentication = getAuthentication() ?: return emptyList()
-
-        return authentication.authorities
-            .map { it.authority }
-            .filter { it.isNotBlank() }
+    override fun getCurrentRunAsAuth(): AuthData {
+        return getCurrentAuth()
     }
 
-    override fun getCurrentRunAsUser(): String {
-        return getCurrentUser()
-    }
-
-    override fun getCurrentRunAsUserAuthorities(): List<String> {
-        return getCurrentUserAuthorities()
-    }
-
-    override fun <T> runAs(user: String, authorities: List<String>, action: () -> T): T {
+    override fun <T> runAs(auth: AuthData, action: () -> T): T {
 
         val prevAuthentication = getAuthentication()
 
-        val grantedAuthorities = authorities.map {
-            SimpleGrantedAuthority(it)
+        val user = auth.getUser()
+        val authorities = auth.getAuthorities()
+
+        val fullAuthorities = if (authorities.contains(user)) {
+            authorities
+        } else {
+            val fullAuthorities = arrayListOf<String>()
+            fullAuthorities.add(user)
+            fullAuthorities.addAll(authorities)
+            fullAuthorities
         }
+
+        val grantedAuthorities = fullAuthorities
+            .filter { it.isNotBlank() }
+            .map { SimpleGrantedAuthority(it) }
+
         val principal = User(user, "", grantedAuthorities)
         val newAuthentication = UsernamePasswordAuthenticationToken(principal, "", grantedAuthorities)
         try {
@@ -57,7 +63,7 @@ class SpringAuthComponent : AuthComponent {
     }
 
     override fun getSystemUser(): String {
-        return AuthContext.APP_PREFIX + springAppName
+        return APP_PREFIX + springAppName
     }
 
     private fun setAuthentication(authentication: Authentication?) {

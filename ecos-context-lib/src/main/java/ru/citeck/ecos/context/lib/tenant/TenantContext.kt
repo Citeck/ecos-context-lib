@@ -6,7 +6,8 @@ object TenantContext {
 
     private val current = ThreadLocal.withInitial { DEFAULT_TENANT }
 
-    fun <T> runInTenant(tenant: String, action: () -> T): T {
+    @JvmStatic
+    fun <T> runWithTenant(tenant: String, action: () -> T): T {
         val prev = current.get()
         try {
             current.set(tenant)
@@ -16,6 +17,7 @@ object TenantContext {
         }
     }
 
+    @JvmStatic
     fun getCurrent(): String {
         return current.get()
     }
