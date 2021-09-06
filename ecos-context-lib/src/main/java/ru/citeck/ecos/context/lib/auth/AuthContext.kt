@@ -7,8 +7,8 @@ object AuthContext {
     var component: AuthComponent = SimpleAuthComponent()
 
     @JvmStatic
-    fun getCurrentAuth(): AuthData {
-        return component.getCurrentAuth()
+    fun getCurrentFullAuth(): AuthData {
+        return component.getCurrentFullAuth()
     }
 
     @JvmStatic
@@ -18,12 +18,12 @@ object AuthContext {
 
     @JvmStatic
     fun getCurrentUser(): String {
-        return getCurrentAuth().getUser()
+        return getCurrentFullAuth().getUser()
     }
 
     @JvmStatic
     fun getCurrentAuthorities(): List<String> {
-        return getCurrentAuth().getAuthorities()
+        return getCurrentFullAuth().getAuthorities()
     }
 
     @JvmStatic
@@ -58,6 +58,21 @@ object AuthContext {
 
     @JvmStatic
     fun <T> runAs(auth: AuthData, action: () -> T): T {
-        return component.runAs(auth, action)
+        return component.runAs(auth, false, action)
+    }
+
+    @JvmStatic
+    fun <T> runAsFull(user: String, action: () -> T): T {
+        return runAsFull(user, emptyList(), action)
+    }
+
+    @JvmStatic
+    fun <T> runAsFull(user: String, authorities: List<String>, action: () -> T): T {
+        return runAsFull(SimpleAuthData(user, authorities), action)
+    }
+
+    @JvmStatic
+    fun <T> runAsFull(auth: AuthData, action: () -> T): T {
+        return component.runAs(auth, true, action)
     }
 }

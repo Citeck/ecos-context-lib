@@ -4,7 +4,7 @@ class SimpleAuthComponent : AuthComponent {
 
     private val currentAuth = ThreadLocal.withInitial<AuthData> { SimpleAuthData.EMPTY }
 
-    override fun <T> runAs(auth: AuthData, action: () -> T): T {
+    override fun <T> runAs(auth: AuthData, full: Boolean, action: () -> T): T {
         val prevInfo = currentAuth.get()
         try {
             val newInfo = if (!auth.getAuthorities().contains(auth.getUser())) {
@@ -22,12 +22,12 @@ class SimpleAuthComponent : AuthComponent {
         }
     }
 
-    override fun getCurrentAuth(): AuthData {
+    override fun getCurrentFullAuth(): AuthData {
         return currentAuth.get()
     }
 
     override fun getCurrentRunAsAuth(): AuthData {
-        return getCurrentAuth()
+        return getCurrentFullAuth()
     }
 
     override fun getSystemUser(): String {

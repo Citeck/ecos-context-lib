@@ -2,11 +2,11 @@ package ru.citeck.ecos.context.lib.auth
 
 interface AuthComponent {
 
-    fun getCurrentAuth(): AuthData
+    fun getCurrentFullAuth(): AuthData
 
     fun getCurrentRunAsAuth(): AuthData
 
-    fun <T> runAs(auth: AuthData, action: () -> T): T
+    fun <T> runAs(auth: AuthData, full: Boolean, action: () -> T): T
 
     fun getSystemUser(): String
 }

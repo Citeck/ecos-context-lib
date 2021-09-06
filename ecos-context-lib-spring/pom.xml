@@ -10,7 +10,7 @@
     <parent>
         <groupId>ru.citeck.ecos.context</groupId>
         <artifactId>ecos-context-lib-project</artifactId>
-        <version>1.0.3</version>
+        <version>1.0.4</version>
     </parent>
 
     <properties>

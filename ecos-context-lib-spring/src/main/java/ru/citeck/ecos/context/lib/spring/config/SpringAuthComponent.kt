@@ -23,18 +23,47 @@ class SpringAuthComponent : AuthComponent {
     @Value("\${spring.application.name:}")
     private lateinit var springAppName: String
 
-    override fun getCurrentAuth(): AuthData {
-        val authentication = getAuthentication() ?: return SimpleAuthData.EMPTY
-        return SimpleAuthData(authentication.name, authentication.authorities.map { it.authority })
+    private var fullAuth: ThreadLocal<Authentication> = ThreadLocal()
+
+    override fun getCurrentFullAuth(): AuthData {
+        return authenticationToAuthData(fullAuth.get() ?: getAuthentication())
     }
 
     override fun getCurrentRunAsAuth(): AuthData {
-        return getCurrentAuth()
+        return authenticationToAuthData(getAuthentication())
     }
 
-    override fun <T> runAs(auth: AuthData, action: () -> T): T {
+    private fun authenticationToAuthData(authentication: Authentication?): AuthData {
+        authentication ?: return SimpleAuthData.EMPTY
+        return SimpleAuthData(authentication.name, authentication.authorities.map { it.authority })
+    }
 
+    override fun <T> runAs(auth: AuthData, full: Boolean, action: () -> T): T {
+
+        val prevFullAuth = fullAuth.get()
         val prevAuthentication = getAuthentication()
+        val newAuthentication = buildAuthentication(auth)
+        val fullAuthOwner = full || prevFullAuth == null
+
+        try {
+            if (fullAuthOwner) {
+                fullAuth.set(newAuthentication)
+            }
+            setAuthentication(newAuthentication)
+            return action.invoke()
+        } finally {
+            setAuthentication(prevAuthentication)
+            if (fullAuthOwner) {
+                if (prevFullAuth == null) {
+                    fullAuth.remove()
+                } else {
+                    fullAuth.set(prevFullAuth)
+                }
+            }
+        }
+    }
+
+    private fun buildAuthentication(auth: AuthData): Authentication {
 
         val user = auth.getUser()
         val authorities = auth.getAuthorities()
@@ -53,13 +82,7 @@ class SpringAuthComponent : AuthComponent {
             .map { SimpleGrantedAuthority(it) }
 
         val principal = User(user, "", grantedAuthorities)
-        val newAuthentication = UsernamePasswordAuthenticationToken(principal, "", grantedAuthorities)
-        try {
-            setAuthentication(newAuthentication)
-            return action.invoke()
-        } finally {
-            setAuthentication(prevAuthentication)
-        }
+        return UsernamePasswordAuthenticationToken(principal, "", grantedAuthorities)
     }
 
     override fun getSystemUser(): String {
