@@ -61,16 +61,7 @@ class SpringAuthComponent : AuthComponent {
         val user = auth.getUser()
         val authorities = auth.getAuthorities()
 
-        val fullAuthorities = if (authorities.contains(user)) {
-            authorities
-        } else {
-            val fullAuthorities = arrayListOf<String>()
-            fullAuthorities.add(user)
-            fullAuthorities.addAll(authorities)
-            fullAuthorities
-        }
-
-        val grantedAuthorities = fullAuthorities
+        val grantedAuthorities = authorities
             .filter { it.isNotBlank() }
             .map { SimpleGrantedAuthority(it) }
 

@@ -10,15 +10,7 @@ class SimpleAuthComponent : AuthComponent {
     override fun <T> runAs(auth: AuthData, full: Boolean, action: () -> T): T {
         val prevInfo = currentAuth.get()
         try {
-            val newInfo = if (!auth.getAuthorities().contains(auth.getUser())) {
-                val newAuthorities = ArrayList<String>()
-                newAuthorities.add(auth.getUser())
-                newAuthorities.addAll(auth.getAuthorities())
-                SimpleAuthData(auth.getUser(), newAuthorities)
-            } else {
-                auth
-            }
-            currentAuth.set(newInfo)
+            currentAuth.set(auth)
             return action.invoke()
         } finally {
             currentAuth.set(prevInfo)

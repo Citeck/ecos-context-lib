@@ -30,6 +30,11 @@ object AuthContext {
     }
 
     @JvmStatic
+    fun getCurrentUserWithAuthorities(): List<String> {
+        return getUserWithAuthorities(getCurrentFullAuth());
+    }
+
+    @JvmStatic
     fun getCurrentRunAsUser(): String {
         return getCurrentRunAsAuth().getUser()
     }
@@ -37,6 +42,11 @@ object AuthContext {
     @JvmStatic
     fun getCurrentRunAsAuthorities(): List<String> {
         return getCurrentRunAsAuth().getAuthorities()
+    }
+
+    @JvmStatic
+    fun getCurrentRunAsUserWithAuthorities(): List<String> {
+        return getUserWithAuthorities(getCurrentRunAsAuth())
     }
 
     @JvmStatic
@@ -92,5 +102,17 @@ object AuthContext {
     @JvmStatic
     fun <T> runAsFull(auth: AuthData, action: () -> T): T {
         return component.runAs(auth, true, action)
+    }
+
+    private fun getUserWithAuthorities(auth: AuthData): List<String> {
+        val authorities = auth.getAuthorities()
+        return if (authorities.contains(auth.getUser())) {
+            authorities
+        } else {
+            val result = ArrayList<String>(authorities.size + 1)
+            result.add(auth.getUser())
+            result.addAll(authorities)
+            result
+        }
     }
 }
