@@ -56,7 +56,12 @@ object AuthContext {
 
     @JvmStatic
     fun <T> runAsSystem(action: () -> T): T {
-        return runAs(AuthConstants.SYSTEM_USER, component.getSystemAuthorities(), action)
+        return runAs(AuthConstants.SYSTEM_USER, getSystemAuthorities(), action)
+    }
+
+    @JvmStatic
+    fun getSystemAuthorities(): List<String> {
+        return component.getSystemAuthorities()
     }
 
     @JvmStatic
