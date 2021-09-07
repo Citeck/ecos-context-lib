@@ -1,5 +1,10 @@
 package ru.citeck.ecos.context.lib.auth
 
+import ru.citeck.ecos.context.lib.auth.data.AuthData
+import ru.citeck.ecos.context.lib.auth.data.SimpleAuthData
+import ru.citeck.ecos.context.lib.func.UncheckedRunnable
+import ru.citeck.ecos.context.lib.func.UncheckedSupplier
+
 object AuthContext {
 
     var component: AuthComponent = SimpleAuthComponent()
@@ -35,23 +40,23 @@ object AuthContext {
     }
 
     @JvmStatic
+    fun runAsSystemJ(action: UncheckedRunnable) {
+        runAsSystem { action.invoke() }
+    }
+
+    @JvmStatic
+    fun <T> runAsSystemJ(action: UncheckedSupplier<T>): T {
+        return runAsSystem { action.invoke() }
+    }
+
+    @JvmStatic
     fun isRunAsSystem(): Boolean {
-        return getCurrentRunAsAuthorities().contains(AuthRole.SYSTEM)
+        return getCurrentRunAsUser() == AuthConstants.SYSTEM_USER
     }
 
     @JvmStatic
     fun <T> runAsSystem(action: () -> T): T {
-        return runAs(component.getSystemUser(), listOf(AuthRole.SYSTEM), action)
-    }
-
-    @JvmStatic
-    fun getSystemUser(): String {
-        return component.getSystemUser()
-    }
-
-    @JvmStatic
-    fun runAsSystemJ(action: Runnable) {
-        return runAsSystem { action.run() }
+        return runAs(AuthConstants.SYSTEM_USER, component.getSystemAuthorities(), action)
     }
 
     @JvmStatic

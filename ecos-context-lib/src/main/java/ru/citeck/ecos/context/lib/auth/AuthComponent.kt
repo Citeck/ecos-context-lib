@@ -1,5 +1,7 @@
 package ru.citeck.ecos.context.lib.auth
 
+import ru.citeck.ecos.context.lib.auth.data.AuthData
+
 interface AuthComponent {
 
     fun getCurrentFullAuth(): AuthData
@@ -8,5 +10,5 @@ interface AuthComponent {
 
     fun <T> runAs(auth: AuthData, full: Boolean, action: () -> T): T
 
-    fun getSystemUser(): String
+    fun getSystemAuthorities(): List<String>
 }

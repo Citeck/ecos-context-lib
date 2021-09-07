@@ -1,6 +1,6 @@
-package ru.citeck.ecos.context.lib.auth
+package ru.citeck.ecos.context.lib.auth.data
 
-class SimpleAuthData(
+open class SimpleAuthData(
     private val user: String,
     private val authorities: List<String>
 ) : AuthData {

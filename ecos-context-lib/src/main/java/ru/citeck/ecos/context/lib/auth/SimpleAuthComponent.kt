@@ -1,5 +1,8 @@
 package ru.citeck.ecos.context.lib.auth
 
+import ru.citeck.ecos.context.lib.auth.data.AuthData
+import ru.citeck.ecos.context.lib.auth.data.SimpleAuthData
+
 class SimpleAuthComponent : AuthComponent {
 
     private val currentAuth = ThreadLocal.withInitial<AuthData> { SimpleAuthData.EMPTY }
@@ -30,7 +33,7 @@ class SimpleAuthComponent : AuthComponent {
         return getCurrentFullAuth()
     }
 
-    override fun getSystemUser(): String {
-        return "system"
+    override fun getSystemAuthorities(): List<String> {
+        return emptyList()
     }
 }

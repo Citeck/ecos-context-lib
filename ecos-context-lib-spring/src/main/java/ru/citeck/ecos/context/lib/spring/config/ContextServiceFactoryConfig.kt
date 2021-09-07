@@ -1,7 +1,6 @@
 package ru.citeck.ecos.context.lib.spring.config
 
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import ru.citeck.ecos.context.lib.ContextServiceFactory
 import ru.citeck.ecos.context.lib.auth.AuthComponent
@@ -17,7 +16,6 @@ open class ContextServiceFactoryConfig : ContextServiceFactory() {
         super.init()
     }
 
-    @Bean
     override fun createAuthComponent(): AuthComponent {
         return authComponentBean
     }

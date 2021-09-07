@@ -1,4 +1,4 @@
-package ru.citeck.ecos.context.lib.auth
+package ru.citeck.ecos.context.lib.auth.data
 
 interface AuthData {
 

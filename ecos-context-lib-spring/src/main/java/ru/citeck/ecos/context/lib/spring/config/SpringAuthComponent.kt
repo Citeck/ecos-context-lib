@@ -1,24 +1,17 @@
 package ru.citeck.ecos.context.lib.spring.config
 
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.User
-import org.springframework.stereotype.Component
 import ru.citeck.ecos.context.lib.auth.AuthComponent
-import ru.citeck.ecos.context.lib.auth.AuthData
-import ru.citeck.ecos.context.lib.auth.SimpleAuthData
+import ru.citeck.ecos.context.lib.auth.AuthConstants
+import ru.citeck.ecos.context.lib.auth.data.AuthData
+import ru.citeck.ecos.context.lib.auth.data.SimpleAuthData
 
-@Component
-@ConditionalOnMissingBean(AuthComponent::class)
 class SpringAuthComponent : AuthComponent {
-
-    companion object {
-        const val APP_PREFIX = "APP_"
-    }
 
     @Value("\${spring.application.name:}")
     private lateinit var springAppName: String
@@ -85,8 +78,8 @@ class SpringAuthComponent : AuthComponent {
         return UsernamePasswordAuthenticationToken(principal, "", grantedAuthorities)
     }
 
-    override fun getSystemUser(): String {
-        return APP_PREFIX + springAppName
+    override fun getSystemAuthorities(): List<String> {
+        return listOf(AuthConstants.APP_PREFIX + springAppName)
     }
 
     private fun setAuthentication(authentication: Authentication?) {
