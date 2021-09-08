@@ -31,7 +31,7 @@ object AuthContext {
 
     @JvmStatic
     fun getCurrentUserWithAuthorities(): List<String> {
-        return getUserWithAuthorities(getCurrentFullAuth());
+        return getUserWithAuthorities(getCurrentFullAuth())
     }
 
     @JvmStatic

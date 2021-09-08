@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.User
 import ru.citeck.ecos.context.lib.auth.AuthComponent
 import ru.citeck.ecos.context.lib.auth.AuthConstants
 import ru.citeck.ecos.context.lib.auth.data.AuthData
+import ru.citeck.ecos.context.lib.auth.data.EmptyAuth
 import ru.citeck.ecos.context.lib.auth.data.SimpleAuthData
 
 class SpringAuthComponent : AuthComponent {
@@ -27,7 +28,7 @@ class SpringAuthComponent : AuthComponent {
     }
 
     private fun authenticationToAuthData(authentication: Authentication?): AuthData {
-        authentication ?: return SimpleAuthData.EMPTY
+        authentication ?: return EmptyAuth
         return SimpleAuthData(authentication.name, authentication.authorities.map { it.authority })
     }
 
