@@ -75,6 +75,16 @@ object AuthContext {
     }
 
     @JvmStatic
+    fun <T> runAsJ(user: String, action: UncheckedSupplier<T>): T {
+        return runAs(user) { action.invoke() }
+    }
+
+    @JvmStatic
+    fun runAsJ(user: String, action: UncheckedRunnable) {
+        return runAs(user) { action.invoke() }
+    }
+
+    @JvmStatic
     fun <T> runAs(user: String, action: () -> T): T {
         return runAs(user, emptyList(), action)
     }
@@ -85,13 +95,33 @@ object AuthContext {
     }
 
     @JvmStatic
+    fun <T> runAsJ(auth: AuthData, action: UncheckedSupplier<T>): T {
+        return runAs(auth) { action.invoke() }
+    }
+
+    @JvmStatic
+    fun runAsJ(auth: AuthData, action: UncheckedRunnable) {
+        return runAs(auth) { action.invoke() }
+    }
+
+    @JvmStatic
     fun <T> runAs(auth: AuthData, action: () -> T): T {
         return component.runAs(auth, false, action)
     }
 
     @JvmStatic
+    fun <T> runAsFullJ(user: String, authorities: List<String>, action: UncheckedSupplier<T>): T {
+        return runAsFull(user, authorities) { action.invoke() }
+    }
+
+    @JvmStatic
+    fun runAsFullJ(user: String, authorities: List<String>, action: UncheckedRunnable) {
+        return runAsFull(user, authorities) { action.invoke() }
+    }
+
+    @JvmStatic
     fun <T> runAsFull(user: String, action: () -> T): T {
-        return runAsFull(user, emptyList(), action)
+        return runAsFull(user, action)
     }
 
     @JvmStatic
@@ -100,17 +130,28 @@ object AuthContext {
     }
 
     @JvmStatic
+    fun <T> runAsFullJ(auth: AuthData, action: UncheckedSupplier<T>): T {
+        return runAsFull(auth) { action.invoke() }
+    }
+
+    @JvmStatic
+    fun runAsFullJ(auth: AuthData, action: UncheckedRunnable) {
+        return runAsFull(auth) { action.invoke() }
+    }
+
+    @JvmStatic
     fun <T> runAsFull(auth: AuthData, action: () -> T): T {
         return component.runAs(auth, true, action)
     }
 
     private fun getUserWithAuthorities(auth: AuthData): List<String> {
+        val user = auth.getUser()
         val authorities = auth.getAuthorities()
-        return if (authorities.contains(auth.getUser())) {
+        return if (user.isEmpty() || authorities.contains(user)) {
             authorities
         } else {
             val result = ArrayList<String>(authorities.size + 1)
-            result.add(auth.getUser())
+            result.add(user)
             result.addAll(authorities)
             result
         }

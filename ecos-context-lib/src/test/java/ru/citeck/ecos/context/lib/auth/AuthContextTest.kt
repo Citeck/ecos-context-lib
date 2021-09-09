@@ -30,6 +30,9 @@ class AuthContextTest {
 
     private fun expectEmptyAuth() {
 
+        assertThat(AuthContext.getCurrentUserWithAuthorities()).isEmpty()
+        assertThat(AuthContext.getCurrentRunAsUserWithAuthorities()).isEmpty()
+
         assertThat(AuthContext.getCurrentFullAuth()).isSameAs(EmptyAuth)
         assertThat(AuthContext.getCurrentRunAsAuth()).isSameAs(EmptyAuth)
 
