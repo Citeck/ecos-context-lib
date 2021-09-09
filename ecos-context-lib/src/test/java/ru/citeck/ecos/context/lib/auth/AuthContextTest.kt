@@ -18,7 +18,7 @@ class AuthContextTest {
             assertThat(AuthContext.getCurrentUser()).isEqualTo(testUser0)
             assertThat(AuthContext.getCurrentRunAsUser()).isEqualTo(testUser0)
             AuthContext.runAs(testUser1) {
-                assertThat(AuthContext.getCurrentUser()).isEqualTo(testUser1)
+                assertThat(AuthContext.getCurrentUser()).isEqualTo(testUser0)
                 assertThat(AuthContext.getCurrentRunAsUser()).isEqualTo(testUser1)
             }
             assertThat(AuthContext.getCurrentUser()).isEqualTo(testUser0)
