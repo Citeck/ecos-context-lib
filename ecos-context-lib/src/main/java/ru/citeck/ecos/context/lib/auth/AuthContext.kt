@@ -121,7 +121,7 @@ object AuthContext {
 
     @JvmStatic
     fun <T> runAsFull(user: String, action: () -> T): T {
-        return runAsFull(user, action)
+        return runAsFull(user, emptyList(), action)
     }
 
     @JvmStatic
