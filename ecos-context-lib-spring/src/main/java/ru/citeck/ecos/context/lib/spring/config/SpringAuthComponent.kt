@@ -14,8 +14,7 @@ import ru.citeck.ecos.context.lib.auth.data.SimpleAuthData
 
 class SpringAuthComponent : AuthComponent {
 
-    @Value("\${spring.application.name:}")
-    private lateinit var springAppName: String
+    private var springAppName: String = ""
 
     private var fullAuth: ThreadLocal<Authentication> = ThreadLocal()
 
@@ -71,7 +70,15 @@ class SpringAuthComponent : AuthComponent {
     }
 
     override fun getSystemAuthorities(): List<String> {
-        return listOf(AuthConstants.APP_PREFIX + springAppName)
+        if (springAppName.isNotBlank()) {
+            return listOf(AuthConstants.APP_PREFIX + springAppName)
+        }
+        return emptyList()
+    }
+
+    @Value("\${spring.application.name:}")
+    fun setSpringAppName(name: String) {
+        this.springAppName = name
     }
 
     private fun setAuthentication(authentication: Authentication?) {
