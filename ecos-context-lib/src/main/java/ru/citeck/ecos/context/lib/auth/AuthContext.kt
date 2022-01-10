@@ -65,6 +65,11 @@ object AuthContext {
     }
 
     @JvmStatic
+    fun isRunAsAdmin(): Boolean {
+        return getCurrentRunAsAuthorities().contains(AuthRole.ADMIN)
+    }
+
+    @JvmStatic
     fun <T> runAsSystem(action: () -> T): T {
         return runAs(AuthConstants.SYSTEM_USER, getSystemAuthorities(), action)
     }

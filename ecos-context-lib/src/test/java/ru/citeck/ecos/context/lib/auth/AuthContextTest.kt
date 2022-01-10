@@ -7,6 +7,31 @@ import ru.citeck.ecos.context.lib.auth.data.EmptyAuth
 class AuthContextTest {
 
     @Test
+    fun runAsSystemAndAdminTest() {
+
+        assertThat(AuthContext.isRunAsSystem()).isFalse
+        assertThat(AuthContext.isRunAsAdmin()).isFalse
+
+        val (isRunAsSystem, isRunAsAdmin) = AuthContext.runAsSystem {
+            AuthContext.isRunAsSystem() to AuthContext.isRunAsAdmin()
+        }
+        assertThat(isRunAsSystem).isTrue
+        assertThat(isRunAsAdmin).isFalse
+
+        val (isRunAsSystem2, isRunAsAdmin2) = AuthContext.runAs("admin") {
+            AuthContext.isRunAsSystem() to AuthContext.isRunAsAdmin()
+        }
+        assertThat(isRunAsSystem2).isFalse
+        assertThat(isRunAsAdmin2).isFalse
+
+        val (isRunAsSystem3, isRunAsAdmin3) = AuthContext.runAs("admin", listOf(AuthRole.ADMIN)) {
+            AuthContext.isRunAsSystem() to AuthContext.isRunAsAdmin()
+        }
+        assertThat(isRunAsSystem3).isFalse
+        assertThat(isRunAsAdmin3).isTrue
+    }
+
+    @Test
     fun test() {
 
         val testUser0 = "test-user-0"
