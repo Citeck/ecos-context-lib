@@ -1,5 +1,7 @@
 package ru.citeck.ecos.context.lib.auth
 
+import ru.citeck.ecos.context.lib.auth.component.AuthComponent
+import ru.citeck.ecos.context.lib.auth.component.SimpleAuthComponent
 import ru.citeck.ecos.context.lib.auth.data.AuthData
 import ru.citeck.ecos.context.lib.auth.data.SimpleAuthData
 import ru.citeck.ecos.context.lib.func.UncheckedRunnable
