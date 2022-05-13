@@ -190,7 +190,6 @@
 
     <modules>
         <module>ecos-context-lib</module>
-        <module>ecos-context-lib-spring</module>
     </modules>
 
     <repositories>
