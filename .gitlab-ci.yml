@@ -11,7 +11,6 @@ mirror:
   cache: {}
   only:
     - master
-    - develop
   script:
     - mkdir -p ~/.ssh                                              
     - echo $GITHUB_MIRROR_PRIVATE | base64 -d > ~/.ssh/id_rsa      
@@ -22,6 +21,3 @@ mirror:
     - git remote show mirror
     - git remote -v 
     - git push -f --progress mirror HEAD:master
-    - git fetch
-    - git checkout develop
-    - git push -f --progress mirror HEAD:develop
