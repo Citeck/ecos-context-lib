@@ -13,8 +13,7 @@ object AuthRole {
      * Authenticated user
      */
     const val USER = PREFIX + "USER"
-
     const val GUEST = PREFIX + "GUEST"
-
+    const val SYSTEM = PREFIX + "SYSTEM"
     const val ANONYMOUS = PREFIX + "ANONYMOUS"
 }

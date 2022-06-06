@@ -78,7 +78,9 @@ object AuthContext {
 
     @JvmStatic
     fun getSystemAuthorities(): List<String> {
-        return component.getSystemAuthorities()
+        val systemAuthorities = ArrayList(component.getSystemAuthorities())
+        systemAuthorities.add(AuthRole.SYSTEM)
+        return systemAuthorities
     }
 
     @JvmStatic
