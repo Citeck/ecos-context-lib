@@ -7,6 +7,16 @@ import ru.citeck.ecos.context.lib.auth.data.EmptyAuth
 class AuthContextTest {
 
     @Test
+    fun runAsSystemRoleTest() {
+
+        assertThat(AuthContext.isRunAsSystem()).isFalse
+
+        AuthContext.runAs("custom-system", listOf(AuthRole.SYSTEM)) {
+            assertThat(AuthContext.isRunAsSystem()).isTrue
+        }
+    }
+
+    @Test
     fun runAsSystemAndAdminTest() {
 
         assertThat(AuthContext.isRunAsSystem()).isFalse

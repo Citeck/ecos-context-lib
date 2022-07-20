@@ -63,7 +63,8 @@ object AuthContext {
 
     @JvmStatic
     fun isRunAsSystem(): Boolean {
-        return getCurrentRunAsUser() == AuthConstants.SYSTEM_USER
+        val runAs = getCurrentRunAsAuth()
+        return runAs.getAuthorities().contains(AuthRole.SYSTEM) || runAs.getUser() == AuthUser.SYSTEM
     }
 
     @JvmStatic
@@ -73,7 +74,7 @@ object AuthContext {
 
     @JvmStatic
     fun <T> runAsSystem(action: () -> T): T {
-        return runAs(AuthConstants.SYSTEM_USER, getSystemAuthorities(), action)
+        return runAs(AuthUser.SYSTEM, getSystemAuthorities(), action)
     }
 
     @JvmStatic
