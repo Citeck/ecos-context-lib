@@ -3,6 +3,14 @@ package ru.citeck.ecos.context.lib.auth
 object AuthConstants {
 
     const val APP_PREFIX = "APP_"
+
+    @Deprecated(
+        "use AuthGroup.PREFIX",
+        replaceWith = ReplaceWith(
+            "AuthGroup.PREFIX",
+            "ru.citeck.ecos.context.lib.auth.AuthGroup"
+        )
+    )
     const val GROUP_PREFIX = "GROUP_"
 
     @Deprecated(
