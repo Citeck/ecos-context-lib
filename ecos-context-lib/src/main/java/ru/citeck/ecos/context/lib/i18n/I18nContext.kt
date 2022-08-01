@@ -8,9 +8,11 @@ import java.util.*
 
 object I18nContext {
 
+    @JvmField
     val RUSSIAN = Locale("ru")
+    @JvmField
     val ENGLISH = Locale.ENGLISH
-
+    @JvmField
     val DEFAULT = listOf(ENGLISH)
 
     var component: I18nComponent = SimpleI18nComponent()
@@ -23,6 +25,16 @@ object I18nContext {
     @JvmStatic
     fun <T> doWithLocaleJ(locale: Locale?, action: UncheckedSupplier<T>): T {
         return doWithLocale(locale) { action.invoke() }
+    }
+
+    @JvmStatic
+    fun doWithLocalesJ(locales: List<Locale>?, action: UncheckedRunnable) {
+        doWithLocales(locales) { action.invoke() }
+    }
+
+    @JvmStatic
+    fun <T> doWithLocalesJ(locales: List<Locale>?, action: UncheckedSupplier<T>): T {
+        return doWithLocales(locales) { action.invoke() }
     }
 
     @JvmStatic
