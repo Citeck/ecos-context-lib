@@ -3,8 +3,26 @@ package ru.citeck.ecos.context.lib.auth
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import ru.citeck.ecos.context.lib.auth.data.EmptyAuth
+import ru.citeck.ecos.context.lib.auth.data.SimpleAuthData
+import ru.citeck.ecos.context.lib.auth.data.TokenAuthData
 
 class AuthContextTest {
+
+    @Test
+    fun authToStringTest() {
+        val auth = SimpleAuthData(
+            "user", listOf("auth0", "auth1", "aut\"h2")
+        )
+        assertThat(auth.toString()).isEqualTo(
+            "{\"user\":\"user\",\"authorities\":[\"auth0\",\"auth1\",\"aut\\\"h2\"]}"
+        )
+        val tokenAuth = TokenAuthData(
+            "user", listOf("auth0", "auth1", "aut\"h2"), "tokenAb\"C"
+        )
+        assertThat(tokenAuth.toString()).isEqualTo(
+            "{\"user\":\"user\",\"authorities\":[\"auth0\",\"auth1\",\"aut\\\"h2\"],\"token\":\"tokenAb\\\"C\"}"
+        )
+    }
 
     @Test
     fun runAsSystemRoleTest() {

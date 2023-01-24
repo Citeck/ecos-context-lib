@@ -3,7 +3,7 @@ package ru.citeck.ecos.context.lib.auth.data
 open class SimpleAuthData(
     private val user: String,
     private val authorities: List<String>
-) : AuthData {
+) : AbstractAuthData() {
 
     override fun getUser(): String {
         return user
