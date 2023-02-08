@@ -10,7 +10,9 @@ import ru.citeck.ecos.context.lib.time.component.TimeZoneComponent
 open class ContextServiceFactory {
 
     open fun init() {
-        AuthContext.component = createAuthComponent() ?: AuthContext.component
+        AuthContext.runAsSystem {
+            AuthContext.component = createAuthComponent() ?: AuthContext.component
+        }
         TimeZoneContext.component = createTimeZoneComponent() ?: TimeZoneContext.component
         I18nContext.component = createI18nComponent() ?: I18nContext.component
     }
