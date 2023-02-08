@@ -3,10 +3,10 @@ package ru.citeck.ecos.context.lib.auth.component
 import ru.citeck.ecos.context.lib.auth.data.AuthData
 import ru.citeck.ecos.context.lib.auth.data.EmptyAuth
 
-class SimpleAuthComponent : AuthComponent {
+class SimpleAuthComponent(defaultAuth: AuthData = EmptyAuth) : AuthComponent {
 
-    private val fullAuth = ThreadLocal.withInitial<AuthData> { EmptyAuth }
-    private val runAsAuth = ThreadLocal.withInitial<AuthData> { EmptyAuth }
+    private val fullAuth = ThreadLocal.withInitial { defaultAuth }
+    private val runAsAuth = ThreadLocal.withInitial { defaultAuth }
 
     override fun <T> runAs(auth: AuthData, full: Boolean, action: () -> T): T {
 
