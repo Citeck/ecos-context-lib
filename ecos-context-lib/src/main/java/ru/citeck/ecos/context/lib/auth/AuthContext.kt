@@ -10,6 +10,12 @@ import ru.citeck.ecos.context.lib.func.UncheckedSupplier
 object AuthContext {
 
     var component: AuthComponent = SimpleAuthComponent()
+        set(value) {
+            if (!isRunAsSystem()) {
+                error("Access denied")
+            }
+            field = value
+        }
 
     @JvmStatic
     fun getCurrentFullAuth(): AuthData {
@@ -62,14 +68,39 @@ object AuthContext {
     }
 
     @JvmStatic
+    fun isRunAsSystemOrAdmin(): Boolean {
+        val auth = getCurrentRunAsAuth()
+        return isSystemAuth(auth) || isAdminAuth(auth)
+    }
+
+    @JvmStatic
+    fun isNotRunAsSystemOrAdmin(): Boolean {
+        return !isRunAsSystemOrAdmin()
+    }
+
+    @JvmStatic
     fun isRunAsSystem(): Boolean {
-        val runAs = getCurrentRunAsAuth()
-        return runAs.getAuthorities().contains(AuthRole.SYSTEM) || runAs.getUser() == AuthUser.SYSTEM
+        return isSystemAuth(getCurrentRunAsAuth())
+    }
+
+    @JvmStatic
+    fun isNotRunAsSystem(): Boolean {
+        return !isRunAsSystem()
     }
 
     @JvmStatic
     fun isRunAsAdmin(): Boolean {
-        return getCurrentRunAsAuthorities().contains(AuthRole.ADMIN)
+        return isAdminAuth(getCurrentRunAsAuth())
+    }
+
+    @JvmStatic
+    fun isSystemAuth(auth: AuthData): Boolean {
+        return auth.getAuthorities().contains(AuthRole.SYSTEM) || auth.getUser() == AuthUser.SYSTEM
+    }
+
+    @JvmStatic
+    fun isAdminAuth(auth: AuthData): Boolean {
+        return auth.getAuthorities().contains(AuthRole.ADMIN)
     }
 
     @JvmStatic
