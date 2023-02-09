@@ -4,6 +4,10 @@ import java.util.*
 
 abstract class AbstractAuthData : AuthData {
 
+    override fun isEmpty(): Boolean {
+        return getUser().isEmpty() && getAuthorities().isEmpty()
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) {
             return true

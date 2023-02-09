@@ -3,10 +3,10 @@ package ru.citeck.ecos.context.lib.auth.component
 import ru.citeck.ecos.context.lib.auth.data.AuthData
 import ru.citeck.ecos.context.lib.auth.data.EmptyAuth
 
-class SimpleAuthComponent(defaultAuth: AuthData = EmptyAuth) : AuthComponent {
+class SimpleAuthComponent(private val defaultAuth: AuthData = EmptyAuth) : AuthComponent {
 
-    private val fullAuth = ThreadLocal.withInitial { defaultAuth }
-    private val runAsAuth = ThreadLocal.withInitial { defaultAuth }
+    private val fullAuth = ThreadLocal.withInitial<AuthData> { EmptyAuth }
+    private val runAsAuth = ThreadLocal.withInitial<AuthData> { EmptyAuth }
 
     override fun <T> runAs(auth: AuthData, full: Boolean, action: () -> T): T {
 
@@ -19,7 +19,7 @@ class SimpleAuthComponent(defaultAuth: AuthData = EmptyAuth) : AuthComponent {
                 fullAuth.set(fullPrev)
             }
         } else {
-            if (fullAuth.get() == EmptyAuth) {
+            if (fullAuth.get().isEmpty()) {
                 return runAs(auth, true, action)
             }
             val prevRunAs = runAsAuth.get()
@@ -33,13 +33,18 @@ class SimpleAuthComponent(defaultAuth: AuthData = EmptyAuth) : AuthComponent {
     }
 
     override fun getCurrentFullAuth(): AuthData {
-        return fullAuth.get()
+        val fullAuth = fullAuth.get()
+        return if (fullAuth.isEmpty()) {
+            defaultAuth
+        } else {
+            fullAuth
+        }
     }
 
     override fun getCurrentRunAsAuth(): AuthData {
         val runAs = runAsAuth.get()
-        return if (runAs == EmptyAuth) {
-            fullAuth.get()
+        return if (runAs.isEmpty()) {
+            getCurrentFullAuth()
         } else {
             runAs
         }
