@@ -2,50 +2,50 @@ package ru.citeck.ecos.context.lib.auth.component
 
 import ru.citeck.ecos.context.lib.auth.data.AuthData
 import ru.citeck.ecos.context.lib.auth.data.EmptyAuth
-import java.util.concurrent.atomic.AtomicBoolean
 
 class SimpleAuthComponent(private val defaultAuth: AuthData = EmptyAuth) : AuthComponent {
 
-    private val fullAuth = ThreadLocal.withInitial<AuthData> { EmptyAuth }
-    private val runAsAuth = ThreadLocal.withInitial<AuthData> { EmptyAuth }
-    private val customFullAuth = AtomicBoolean(false)
+    private val state = ThreadLocal.withInitial { AuthState() }
 
     override fun <T> runAs(auth: AuthData, full: Boolean, action: () -> T): T {
 
+        val state = state.get()
+
         if (full) {
-            val fullPrev = fullAuth.get()
-            val customAuthBefore = customFullAuth.get()
+            val fullPrev = state.fullAuth
+            val customAuthBefore = state.customFullAuth
             try {
-                customFullAuth.set(true)
-                fullAuth.set(auth)
+                state.customFullAuth = true
+                state.fullAuth = auth
                 return action.invoke()
             } finally {
-                fullAuth.set(fullPrev)
-                customFullAuth.set(customAuthBefore)
+                state.fullAuth = fullPrev
+                state.customFullAuth = customAuthBefore
             }
         } else {
-            if (fullAuth.get().isEmpty()) {
+            if (state.fullAuth.isEmpty()) {
                 return runAs(auth, true, action)
             }
-            val prevRunAs = runAsAuth.get()
+            val prevRunAs = state.runAsAuth
             try {
-                runAsAuth.set(auth)
+                state.runAsAuth = auth
                 return action.invoke()
             } finally {
-                runAsAuth.set(prevRunAs)
+                state.runAsAuth = prevRunAs
             }
         }
     }
 
     override fun getCurrentFullAuth(): AuthData {
-        if (!customFullAuth.get()) {
+        val state = state.get()
+        if (!state.customFullAuth) {
             return defaultAuth
         }
-        return fullAuth.get()
+        return state.fullAuth
     }
 
     override fun getCurrentRunAsAuth(): AuthData {
-        val runAs = runAsAuth.get()
+        val runAs = state.get().runAsAuth
         return if (runAs.isEmpty()) {
             getCurrentFullAuth()
         } else {
@@ -56,4 +56,10 @@ class SimpleAuthComponent(private val defaultAuth: AuthData = EmptyAuth) : AuthC
     override fun getSystemAuthorities(): List<String> {
         return emptyList()
     }
+
+    private class AuthState(
+        var fullAuth: AuthData = EmptyAuth,
+        var runAsAuth: AuthData = EmptyAuth,
+        var customFullAuth: Boolean = false
+    )
 }
