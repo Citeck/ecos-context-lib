@@ -12,15 +12,18 @@ class SimpleAuthComponent(private val defaultAuth: AuthData = EmptyAuth) : AuthC
         val state = state.get()
 
         if (full) {
+            val runAsPrev = state.runAsAuth
             val fullPrev = state.fullAuth
             val customAuthBefore = state.customFullAuth
             try {
                 state.customFullAuth = true
                 state.fullAuth = auth
+                state.runAsAuth = EmptyAuth
                 return action.invoke()
             } finally {
                 state.fullAuth = fullPrev
                 state.customFullAuth = customAuthBefore
+                state.runAsAuth = runAsPrev
             }
         } else {
             if (state.fullAuth.isEmpty()) {

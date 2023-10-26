@@ -9,6 +9,25 @@ import ru.citeck.ecos.context.lib.auth.data.TokenAuthData
 class AuthContextTest {
 
     @Test
+    fun fullAuthWithRunAsTest() {
+        AuthContext.runAs("abc") {
+            assertThat(AuthContext.getCurrentUser()).isEqualTo("abc")
+            assertThat(AuthContext.getCurrentFullAuth().getUser()).isEqualTo("abc")
+            assertThat(AuthContext.getCurrentRunAsAuth().getUser()).isEqualTo("abc")
+            AuthContext.runAs("def") {
+                assertThat(AuthContext.getCurrentUser()).isEqualTo("abc")
+                assertThat(AuthContext.getCurrentFullAuth().getUser()).isEqualTo("abc")
+                assertThat(AuthContext.getCurrentRunAsAuth().getUser()).isEqualTo("def")
+                AuthContext.runAsFull("hij") {
+                    assertThat(AuthContext.getCurrentUser()).isEqualTo("hij")
+                    assertThat(AuthContext.getCurrentFullAuth().getUser()).isEqualTo("hij")
+                    assertThat(AuthContext.getCurrentRunAsAuth().getUser()).isEqualTo("hij")
+                }
+            }
+        }
+    }
+
+    @Test
     fun authToStringTest() {
         val auth = SimpleAuthData(
             "user", listOf("auth0", "auth1", "aut\"h2")
