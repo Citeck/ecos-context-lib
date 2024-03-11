@@ -1,9 +1,14 @@
 package ru.citeck.ecos.context.lib.auth.component
 
+import org.slf4j.MDC
 import ru.citeck.ecos.context.lib.auth.data.AuthData
 import ru.citeck.ecos.context.lib.auth.data.EmptyAuth
 
 class SimpleAuthComponent(private val defaultAuth: AuthData = EmptyAuth) : AuthComponent {
+
+    companion object {
+        private const val MDC_USER_KEY = "ecosUser"
+    }
 
     private val state = ThreadLocal.withInitial { AuthState() }
 
@@ -15,15 +20,22 @@ class SimpleAuthComponent(private val defaultAuth: AuthData = EmptyAuth) : AuthC
             val runAsPrev = state.runAsAuth
             val fullPrev = state.fullAuth
             val customAuthBefore = state.customFullAuth
+            val mdcUserBefore = MDC.get(MDC_USER_KEY)
             try {
                 state.customFullAuth = true
                 state.fullAuth = auth
                 state.runAsAuth = EmptyAuth
+                MDC.put(MDC_USER_KEY, auth.getUser())
                 return action.invoke()
             } finally {
                 state.fullAuth = fullPrev
                 state.customFullAuth = customAuthBefore
                 state.runAsAuth = runAsPrev
+                if (mdcUserBefore.isNullOrBlank()) {
+                    MDC.remove(MDC_USER_KEY)
+                } else {
+                    MDC.put(MDC_USER_KEY, mdcUserBefore)
+                }
             }
         } else {
             if (state.fullAuth.isEmpty()) {
