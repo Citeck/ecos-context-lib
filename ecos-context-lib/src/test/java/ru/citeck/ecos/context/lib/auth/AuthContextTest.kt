@@ -30,13 +30,16 @@ class AuthContextTest {
     @Test
     fun authToStringTest() {
         val auth = SimpleAuthData(
-            "user", listOf("auth0", "auth1", "aut\"h2")
+            "user",
+            listOf("auth0", "auth1", "aut\"h2")
         )
         assertThat(auth.toString()).isEqualTo(
             "{\"user\":\"user\",\"authorities\":[\"auth0\",\"auth1\",\"aut\\\"h2\"]}"
         )
         val tokenAuth = TokenAuthData(
-            "user", listOf("auth0", "auth1", "aut\"h2"), "tokenAb\"C"
+            "user",
+            listOf("auth0", "auth1", "aut\"h2"),
+            "tokenAb\"C"
         )
         assertThat(tokenAuth.toString()).isEqualTo(
             "{\"user\":\"user\",\"authorities\":[\"auth0\",\"auth1\",\"aut\\\"h2\"],\"token\":\"tokenAb\\\"C\"}"

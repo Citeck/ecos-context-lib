@@ -9,6 +9,7 @@ object AuthRole {
     // role
 
     const val ADMIN = PREFIX + "ADMIN"
+
     /**
      * Authenticated user
      */
