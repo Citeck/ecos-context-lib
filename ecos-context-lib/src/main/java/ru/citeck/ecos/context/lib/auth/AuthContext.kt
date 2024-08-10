@@ -3,7 +3,12 @@ package ru.citeck.ecos.context.lib.auth
 import ru.citeck.ecos.context.lib.auth.component.AuthComponent
 import ru.citeck.ecos.context.lib.auth.component.SimpleAuthComponent
 import ru.citeck.ecos.context.lib.auth.data.AuthData
+import ru.citeck.ecos.context.lib.auth.data.AuthState
 import ru.citeck.ecos.context.lib.auth.data.SimpleAuthData
+import ru.citeck.ecos.context.lib.ctx.CtxScope
+import ru.citeck.ecos.context.lib.ctx.CtxScopeData
+import ru.citeck.ecos.context.lib.ctx.GlobalEcosContext
+import ru.citeck.ecos.context.lib.ctx.extval.SimpleCtxExtValue
 import ru.citeck.ecos.context.lib.func.UncheckedRunnable
 import ru.citeck.ecos.context.lib.func.UncheckedSupplier
 
@@ -16,6 +21,28 @@ object AuthContext {
             }
             field = value
         }
+
+    init {
+        GlobalEcosContext.register(
+            AuthContext::class,
+            object : SimpleCtxExtValue<AuthState> {
+                override fun get(): AuthState {
+                    return component.getAuthState()
+                }
+                override fun set(value: AuthState?) {
+                    return component.setAuthState(value ?: AuthState.DEFAULT)
+                }
+            }
+        )
+    }
+
+    fun get(scope: CtxScopeData): AuthState {
+        return scope[AuthContext::class] ?: AuthState.DEFAULT
+    }
+
+    fun set(scope: CtxScope, authState: AuthState) {
+        scope[AuthContext::class] = authState
+    }
 
     @JvmStatic
     fun getCurrentFullAuth(): AuthData {

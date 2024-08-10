@@ -18,7 +18,7 @@
 
     <properties>
 
-        <revision>1.4.0</revision>
+        <revision>1.5.0</revision>
 
     </properties>
 
@@ -38,5 +38,12 @@
     <modules>
         <module>ecos-context-lib</module>
     </modules>
+
+    <repositories>
+        <repository>
+            <id>citeck-public</id>
+            <url>https://nexus.citeck.ru/repository/maven-public</url>
+        </repository>
+    </repositories>
 
 </project>

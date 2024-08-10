@@ -5,10 +5,14 @@ import java.time.Duration
 class SimpleTimeZoneComponent : TimeZoneComponent {
 
     companion object {
-        val DEFAULT = Duration.ZERO
+        val DEFAULT: Duration = Duration.ZERO
     }
 
     private val current = ThreadLocal.withInitial { DEFAULT }
+
+    override fun setUtcOffset(offset: Duration) {
+        current.set(offset)
+    }
 
     override fun <T> doWithUtcOffset(offset: Duration, action: () -> T): T {
         val prevValue = this.current.get()

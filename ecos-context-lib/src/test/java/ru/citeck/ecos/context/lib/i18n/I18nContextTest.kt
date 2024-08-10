@@ -1,12 +1,49 @@
-package ru.citeck.ecos.context.lib.auth
+package ru.citeck.ecos.context.lib.i18n
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import ru.citeck.ecos.context.lib.i18n.I18nContext
+import ru.citeck.ecos.context.lib.ctx.GlobalEcosContext
 import ru.citeck.ecos.context.lib.i18n.component.I18nComponent
 import java.util.*
+import java.util.concurrent.atomic.AtomicBoolean
+import kotlin.concurrent.thread
 
 class I18nContextTest {
+
+    @Test
+    fun ecosContextTest() {
+
+        val data = I18nContext.doWithLocale(Locale.FRANCE) {
+            assertThat(I18nContext.getLocale()).isEqualTo(Locale.FRANCE)
+            GlobalEcosContext.getScopeData()
+        }
+        assertThat(I18nContext.getLocale()).isEqualTo(Locale.ENGLISH)
+
+        println(data)
+
+        GlobalEcosContext.newScope(data).use {
+            assertThat(I18nContext.getLocale()).isEqualTo(Locale.FRANCE)
+        }
+        assertThat(I18nContext.getLocale()).isEqualTo(Locale.ENGLISH)
+
+        GlobalEcosContext.newScope().use {
+            I18nContext.set(it, Locale.FRANCE)
+            assertThat(I18nContext.getLocale()).isEqualTo(Locale.FRANCE)
+        }
+        assertThat(I18nContext.getLocale()).isEqualTo(Locale.ENGLISH)
+
+        val success = AtomicBoolean()
+        thread(start = true) {
+            assertThat(I18nContext.getLocale()).isEqualTo(Locale.ENGLISH)
+            GlobalEcosContext.newScope(data).use {
+                assertThat(I18nContext.getLocale()).isEqualTo(Locale.FRANCE)
+            }
+            assertThat(I18nContext.getLocale()).isEqualTo(Locale.ENGLISH)
+            success.set(true)
+        }.join()
+
+        assertThat(success.get()).isTrue()
+    }
 
     @Test
     fun test() {
@@ -40,6 +77,9 @@ class I18nContextTest {
             }
             override fun getLocales(): List<Locale> {
                 return listOf(locale)
+            }
+            override fun setLocales(locales: List<Locale>) {
+                locale = locales.firstOrNull() ?: I18nContext.ENGLISH
             }
         }
 

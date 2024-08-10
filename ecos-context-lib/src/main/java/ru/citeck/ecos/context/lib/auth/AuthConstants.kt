@@ -2,6 +2,8 @@ package ru.citeck.ecos.context.lib.auth
 
 object AuthConstants {
 
+    const val MDC_USER_KEY = "ecosUser"
+
     const val APP_PREFIX = "APP_"
 
     @Deprecated(

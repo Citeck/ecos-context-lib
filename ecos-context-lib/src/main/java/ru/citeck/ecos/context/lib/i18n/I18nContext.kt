@@ -1,5 +1,8 @@
 package ru.citeck.ecos.context.lib.i18n
 
+import ru.citeck.ecos.context.lib.ctx.CtxScope
+import ru.citeck.ecos.context.lib.ctx.GlobalEcosContext
+import ru.citeck.ecos.context.lib.ctx.extval.SimpleCtxExtValue
 import ru.citeck.ecos.context.lib.func.UncheckedRunnable
 import ru.citeck.ecos.context.lib.func.UncheckedSupplier
 import ru.citeck.ecos.context.lib.i18n.component.I18nComponent
@@ -16,6 +19,28 @@ object I18nContext {
     val DEFAULT = listOf(ENGLISH)
 
     var component: I18nComponent = SimpleI18nComponent()
+
+    init {
+        GlobalEcosContext.register(
+            I18nContext::class,
+            object : SimpleCtxExtValue<List<Locale>> {
+                override fun get(): List<Locale> {
+                    return component.getLocales()
+                }
+                override fun set(value: List<Locale>?) {
+                    return component.setLocales(value?.ifEmpty { DEFAULT } ?: DEFAULT)
+                }
+            }
+        )
+    }
+
+    fun set(scope: CtxScope, locales: List<Locale>) {
+        scope[I18nContext::class] = locales
+    }
+
+    fun set(scope: CtxScope, locale: Locale) {
+        scope[I18nContext::class] = listOf(locale)
+    }
 
     @JvmStatic
     fun doWithLocaleJ(locale: Locale?, action: UncheckedRunnable) {

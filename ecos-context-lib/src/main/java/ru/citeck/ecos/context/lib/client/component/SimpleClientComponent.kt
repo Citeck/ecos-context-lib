@@ -10,6 +10,10 @@ class SimpleClientComponent : ClientComponent {
 
     private val current = ThreadLocal.withInitial { DEFAULT }
 
+    override fun setClientData(clientData: ClientData) {
+        current.set(clientData)
+    }
+
     override fun <T> doWithClientData(clientData: ClientData, action: () -> T): T {
         val prevValue = this.current.get()
         try {
