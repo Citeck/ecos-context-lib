@@ -7,4 +7,6 @@ interface AuthData {
     fun getAuthorities(): List<String>
 
     fun isEmpty(): Boolean
+
+    fun isNotEmpty(): Boolean = !isEmpty()
 }

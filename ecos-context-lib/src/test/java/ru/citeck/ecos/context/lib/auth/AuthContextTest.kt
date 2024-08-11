@@ -2,11 +2,61 @@ package ru.citeck.ecos.context.lib.auth
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import ru.citeck.ecos.context.lib.auth.component.DefaultAuthComponent
 import ru.citeck.ecos.context.lib.auth.data.EmptyAuth
 import ru.citeck.ecos.context.lib.auth.data.SimpleAuthData
 import ru.citeck.ecos.context.lib.auth.data.TokenAuthData
 
 class AuthContextTest {
+
+    @Test
+    fun runAsEmptyTest() {
+        assertThat(AuthContext.getCurrentRunAsAuth()).isEqualTo(EmptyAuth)
+        val componentBefore = AuthContext.component
+        try {
+            AuthContext.runAsSystem {
+                AuthContext.component = DefaultAuthComponent(AuthContext.SYSTEM_AUTH)
+            }
+            fun assertUsers(full: String, runAs: String) {
+                assertThat(AuthContext.getCurrentFullAuth().getUser()).isEqualTo(full)
+                assertThat(AuthContext.getCurrentRunAsAuth().getUser()).isEqualTo(runAs)
+            }
+            assertUsers(AuthUser.SYSTEM, AuthUser.SYSTEM)
+
+            AuthContext.runAs("user") {
+                assertUsers("user", "user")
+                AuthContext.runAs("user2") {
+                    assertUsers("user", "user2")
+                    AuthContext.runAs("user3") {
+                        assertUsers("user", "user3")
+                        AuthContext.runAs(EmptyAuth) {
+                            assertUsers("", "")
+                        }
+                        AuthContext.runAsFull(EmptyAuth) {
+                            assertUsers("", "")
+                        }
+                        assertUsers("user", "user3")
+                    }
+                    assertUsers("user", "user2")
+                }
+                assertUsers("user", "user")
+            }
+
+            assertUsers(AuthUser.SYSTEM, AuthUser.SYSTEM)
+
+            AuthContext.runAs(EmptyAuth) {
+                assertUsers("", "")
+            }
+
+            AuthContext.runAsFull(EmptyAuth) {
+                assertUsers("", "")
+            }
+        } finally {
+            AuthContext.runAsSystem {
+                AuthContext.component = componentBefore
+            }
+        }
+    }
 
     @Test
     fun fullAuthWithRunAsTest() {

@@ -14,6 +14,4 @@ interface AuthComponent {
     fun getCurrentRunAsAuth(): AuthData
 
     fun <T> runAs(auth: AuthData, full: Boolean, action: () -> T): T
-
-    fun getSystemAuthorities(): List<String>
 }

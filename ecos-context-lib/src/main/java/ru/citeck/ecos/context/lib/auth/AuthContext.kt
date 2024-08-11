@@ -1,7 +1,7 @@
 package ru.citeck.ecos.context.lib.auth
 
 import ru.citeck.ecos.context.lib.auth.component.AuthComponent
-import ru.citeck.ecos.context.lib.auth.component.SimpleAuthComponent
+import ru.citeck.ecos.context.lib.auth.component.DefaultAuthComponent
 import ru.citeck.ecos.context.lib.auth.data.AuthData
 import ru.citeck.ecos.context.lib.auth.data.AuthState
 import ru.citeck.ecos.context.lib.auth.data.SimpleAuthData
@@ -14,11 +14,18 @@ import ru.citeck.ecos.context.lib.func.UncheckedSupplier
 
 object AuthContext {
 
-    var component: AuthComponent = SimpleAuthComponent()
+    val SYSTEM_AUTH = SimpleAuthData(
+        AuthUser.SYSTEM,
+        listOf(AuthRole.SYSTEM)
+    )
+
+    @Volatile
+    var component: AuthComponent = DefaultAuthComponent()
         set(value) {
             if (!isRunAsSystem()) {
                 error("Access denied")
             }
+            value.setAuthState(field.getAuthState())
             field = value
         }
 
@@ -48,7 +55,7 @@ object AuthContext {
         val state = if (user == runAs.getUser()) {
             AuthState(runAs)
         } else {
-            AuthState(SimpleAuthData(user, emptyList()), runAs, true)
+            AuthState(SimpleAuthData(user, emptyList()), runAs)
         }
         set(scope, state)
     }
@@ -141,14 +148,7 @@ object AuthContext {
 
     @JvmStatic
     fun <T> runAsSystem(action: () -> T): T {
-        return runAs(AuthUser.SYSTEM, getSystemAuthorities(), action)
-    }
-
-    @JvmStatic
-    fun getSystemAuthorities(): List<String> {
-        val systemAuthorities = ArrayList(component.getSystemAuthorities())
-        systemAuthorities.add(AuthRole.SYSTEM)
-        return systemAuthorities
+        return runAs(SYSTEM_AUTH, action)
     }
 
     @JvmStatic
