@@ -44,6 +44,15 @@ object AuthContext {
         scope[AuthContext::class] = authState
     }
 
+    fun set(scope: CtxScope, user: String, runAs: AuthData) {
+        val state = if (user == runAs.getUser()) {
+            AuthState(runAs)
+        } else {
+            AuthState(SimpleAuthData(user, emptyList()), runAs, true)
+        }
+        set(scope, state)
+    }
+
     @JvmStatic
     fun getCurrentFullAuth(): AuthData {
         return component.getCurrentFullAuth()
