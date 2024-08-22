@@ -14,6 +14,7 @@ import ru.citeck.ecos.context.lib.func.UncheckedSupplier
 
 object AuthContext {
 
+    @JvmField
     val SYSTEM_AUTH = SimpleAuthData(
         AuthUser.SYSTEM,
         listOf(AuthRole.SYSTEM)
